@@ -82,6 +82,12 @@ class _ReadingMessageState extends State<ReadingMessage> {
         resumeCallBack: () async {},
         inactiveCallBack: () async {},
         suspendingCallBack: () async {}));
+    _bloc.getFontSize();
+    _bloc.getTotalParagraph();
+    _textEditingController
+      ..addListener(() {
+        _bloc.setJumpParagraphMsgError("");
+      });
     super.initState();
   }
 
@@ -253,12 +259,6 @@ class _ReadingMessageState extends State<ReadingMessage> {
 
   @override
   Widget build(BuildContext context) {
-    _bloc.getFontSize();
-    _bloc.getTotalParagraph();
-    _textEditingController
-      ..addListener(() {
-        _bloc.setJumpParagraphMsgError("");
-      });
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
