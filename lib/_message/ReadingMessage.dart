@@ -50,7 +50,6 @@ class _ReadingMessageState extends State<ReadingMessage> {
   final FocusNode _focusNode = FocusNode();
 
   bool _isThemeDark = false;
-  double _fontSize = 0;
   Future<Message> _getListTextParagraphMessage;
   Stream<int> _totalParagraphInMessage;
   Stream<String> _jumpParagraphMsgError;
@@ -172,7 +171,6 @@ class _ReadingMessageState extends State<ReadingMessage> {
             if (snapshotOutValueFontSize.data == null) {
               return Center(child: CircularProgressIndicator());
             }
-            _fontSize = snapshotOutValueFontSize.data;
             return Container(
               padding: EdgeInsets.only(top: 10),
               height: 80,
@@ -183,13 +181,12 @@ class _ReadingMessageState extends State<ReadingMessage> {
                     children: <Widget>[Text("Tamanho da Fonte", style: TextStyle(fontSize: 16))],
                   ),
                   StreamBuilder<double>(
-                    initialData: _fontSize,
+                    initialData: snapshotOutValueFontSize.data,
                     stream: _outValueFontSize,
                     builder: (context, snapshotOutValueFontSize) {
                       if (snapshotOutValueFontSize.data == null) {
                         return CircularProgressIndicator();
                       }
-                      _fontSize = snapshotOutValueFontSize.data;
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -198,18 +195,18 @@ class _ReadingMessageState extends State<ReadingMessage> {
                             color: Colors.blue,
                             child: Icon(Icons.remove, color: Colors.white),
                             onPressed: () {
-                              _bloc.changeFontSize(_fontSize - 1);
+                              _bloc.changeFontSize(snapshotOutValueFontSize.data - 1);
                             },
                           ),
                           SizedBox(width: 25),
-                          Text("${_fontSize.toInt()}"),
+                          Text("${snapshotOutValueFontSize.data.toInt()}"),
                           SizedBox(width: 25),
                           FlatButton(
                             shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(7.0)),
                             color: Colors.blue,
                             child: Icon(Icons.add, color: Colors.white),
                             onPressed: () {
-                              _bloc.changeFontSize(_fontSize + 1);
+                              _bloc.changeFontSize(snapshotOutValueFontSize.data + 1);
                             },
                           ),
                         ],
@@ -334,14 +331,13 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                   if (snapshotOutValueFontSize.data == null) {
                                     return Center(child: CircularProgressIndicator());
                                   }
-                                  _fontSize = snapshotOutValueFontSize.data;
 
                                   return Container(
                                     child: RichText(
                                       text: TextSpan(
                                         children: [
-                                          TextSpan(text: numberParagraph, style: TextStyle(inherit: true, fontSize: _fontSize, color: Colors.blue)),
-                                          TextSpan(text: "  " + textPrgNoNumAndTab, style: TextStyle(fontSize: _fontSize, color: _isThemeDark ? Colors.white : Colors.black))
+                                          TextSpan(text: numberParagraph, style: TextStyle(inherit: true, fontSize: snapshotOutValueFontSize.data, color: Colors.blue)),
+                                          TextSpan(text: "  " + textPrgNoNumAndTab, style: TextStyle(fontSize: snapshotOutValueFontSize.data, color: _isThemeDark ? Colors.white : Colors.black))
                                         ]
                                       ),
                                     ),
