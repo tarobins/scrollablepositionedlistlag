@@ -331,6 +331,7 @@ class _ReadingMessageState extends State<ReadingMessage> {
                               child: StreamBuilder<double>(
                                 stream: _outValueFontSize,
                                 builder: (context, snapshotOutValueFontSize) {
+                                  print("Building with ${snapshotOutValueFontSize.data}");
                                   if (snapshotOutValueFontSize.data == null) {
                                     return Center(child: CircularProgressIndicator());
                                   }
