@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
@@ -8,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ReadingMessageBloc extends BlocBase {
 
   List<Message> listTextParagraph = [];
-  double _fontSize = 0;
+  // double _fontSize = 0;
   int indexReading;
 
   //============================================= Controller ListMsg =================================================
@@ -24,20 +25,18 @@ class ReadingMessageBloc extends BlocBase {
   }
 
 //================================================= Font Size ========================================================
-  var _controllerFontSize = BehaviorSubject<double>.seeded(20);
-  Sink<double> get inValueFontSize=> _controllerFontSize.sink;
-  Stream<double> get outValueFontSize => _controllerFontSize.stream;
+  final fontSizeNotifier = ValueNotifier(20.0);
+  ValueNotifier<double> get fontSize => fontSizeNotifier;
 
   changeFontSize(double size) async{
     final prefs = await SharedPreferences.getInstance();
     prefs.setDouble('readingMessage_fontSize', size);
-    inValueFontSize.add(size);
+    fontSizeNotifier.value = size;
   }
 
-  getFontSize() async{
+  initFontSize() async{
     final prefs = await SharedPreferences.getInstance();
-    _fontSize = prefs.getDouble('readingMessage_fontSize');
-    inValueFontSize.add(_fontSize != null ? _fontSize : 20);
+    fontSizeNotifier.value = prefs.getDouble('readingMessage_fontSize') ?? 20;
   }
 
   //============================================ Jump Error Message =================================================
@@ -62,7 +61,6 @@ class ReadingMessageBloc extends BlocBase {
   void dispose() {
     _controllerTotalParagraph.close();
     _controllerJumpParagraphMsgError.close();
-    _controllerFontSize.close();
     super.dispose();
   }
 }

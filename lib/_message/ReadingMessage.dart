@@ -67,7 +67,6 @@ class _ReadingMessageState extends State<ReadingMessage> {
   Future<Message> _getListTextParagraphMessage;
   Stream<int> _totalParagraphInMessage;
   Stream<String> _jumpParagraphMsgError;
-  Stream<double> _outValueFontSize;
 
   @override
   void initState() {
@@ -76,13 +75,12 @@ class _ReadingMessageState extends State<ReadingMessage> {
     _getListTextParagraphMessage = _bloc.getListMessages();
     _totalParagraphInMessage = _bloc.outValueTotalParagraph;
     _jumpParagraphMsgError = _bloc.outValueJumpParagraphMsgError;
-    _outValueFontSize = _bloc.outValueFontSize;
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
         pauseCallBack: () async {},
         resumeCallBack: () async {},
         inactiveCallBack: () async {},
         suspendingCallBack: () async {}));
-    _bloc.getFontSize();
+    _bloc.initFontSize();
     _bloc.getTotalParagraph();
     _textEditingController
       ..addListener(() {
@@ -193,12 +191,9 @@ class _ReadingMessageState extends State<ReadingMessage> {
         isScrollControlled: false,
         context: context,
         builder: (BuildContext context) {
-          return StreamBuilder<double>(
-              stream: _bloc.outValueFontSize,
-              builder: (context, snapshotOutValueFontSize) {
-                if (snapshotOutValueFontSize.data == null) {
-                  return Center(child: CircularProgressIndicator());
-                }
+          return ValueListenableBuilder(
+              valueListenable: _bloc.fontSize,
+              builder: (context, snapshotOutValueFontSize, child) {
                 return Container(
                     padding: EdgeInsets.only(top: 10),
                     height: 80,
@@ -211,13 +206,13 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                 style: TextStyle(fontSize: 16))
                           ],
                         ),
-                        StreamBuilder<double>(
-                            initialData: snapshotOutValueFontSize.data,
-                            stream: _outValueFontSize,
-                            builder: (context, snapshotOutValueFontSize) {
-                              if (snapshotOutValueFontSize.data == null) {
-                                return CircularProgressIndicator();
-                              }
+                        ValueListenableBuilder(
+                            valueListenable: _bloc.fontSize,
+                            builder:
+                                (context, snapshotOutValueFontSize, child) {
+                              // if (snapshotOutValueFontSize.data == null) {
+                              //   return CircularProgressIndicator();
+                              // }
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -230,12 +225,12 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                         Icon(Icons.remove, color: Colors.white),
                                     onPressed: () {
                                       _bloc.changeFontSize(
-                                          snapshotOutValueFontSize.data - 1);
+                                          snapshotOutValueFontSize - 1);
                                     },
                                   ),
                                   SizedBox(width: 25),
                                   Text(
-                                      "${snapshotOutValueFontSize.data.toInt()}"),
+                                      "${snapshotOutValueFontSize.toInt()}"),
                                   SizedBox(width: 25),
                                   FlatButton(
                                     shape: RoundedRectangleBorder(
@@ -245,7 +240,7 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                     child: Icon(Icons.add, color: Colors.white),
                                     onPressed: () {
                                       _bloc.changeFontSize(
-                                          snapshotOutValueFontSize.data + 1);
+                                          snapshotOutValueFontSize + 1);
                                     },
                                   ),
                                 ],
@@ -376,17 +371,10 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                           top: 2,
                                           right: 12,
                                           bottom: 2),
-                                      child: StreamBuilder<double>(
-                                        stream: _outValueFontSize,
+                                      child: ValueListenableBuilder<double>(
+                                        valueListenable: _bloc.fontSize,
                                         builder: (context,
-                                            snapshotOutValueFontSize) {
-                                          if (snapshotOutValueFontSize.data ==
-                                              null) {
-                                            return Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          }
-
+                                            snapshotOutValueFontSize, child) {
                                           return Container(
                                             child: RichText(
                                               text: TextSpan(children: [
@@ -395,16 +383,14 @@ class _ReadingMessageState extends State<ReadingMessage> {
                                                     style: TextStyle(
                                                         inherit: true,
                                                         fontSize:
-                                                            snapshotOutValueFontSize
-                                                                .data,
+                                                            snapshotOutValueFontSize,
                                                         color: Colors.blue)),
                                                 TextSpan(
                                                     text: "  " +
                                                         textPrgNoNumAndTab,
                                                     style: TextStyle(
                                                         fontSize:
-                                                            snapshotOutValueFontSize
-                                                                .data,
+                                                            snapshotOutValueFontSize,
                                                         color: _isThemeDark
                                                             ? Colors.white
                                                             : Colors.black))
